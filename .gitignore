@@ -1,0 +1,90 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+bin/
+obj/
+
+# Visual Studio files and cache
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+.vs/
+*.VC.db
+*.VC.db-shm
+*.VC.db-wal
+*.VC.opendb
+ipch/
+*.ipch
+*.opendb
+*.FileListAbsolute.txt
+*.tlog/
+*.recipe
+*.lastbuildstate
+
+# Windows executables and debug files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.manifest
+
+# Cocos2d-x specific
+Debug.win32/
+Release.win32/
+*.Build.CppClean.log
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Documentation directory (excluded as requested)
+.doc/
+
+# Logs
+*.log
+logs/
+
+# Node modules (if any)
+node_modules/

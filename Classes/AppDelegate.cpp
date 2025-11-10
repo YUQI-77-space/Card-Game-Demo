@@ -1,0 +1,134 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
+#include "AppDelegate.h"
+#include "HelloWorldScene.h"
+
+// #define USE_AUDIO_ENGINE 1
+// #define USE_SIMPLE_AUDIO_ENGINE 1
+
+#if USE_AUDIO_ENGINE && USE_SIMPLE_AUDIO_ENGINE
+#error "Don't use AudioEngine and SimpleAudioEngine at the same time. Please just select one in your game!"
+#endif
+
+#if USE_AUDIO_ENGINE
+#include "audio/include/AudioEngine.h"
+using namespace cocos2d::experimental;
+#elif USE_SIMPLE_AUDIO_ENGINE
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
+#endif
+
+USING_NS_CC;
+
+// 设计分辨率：1080 x 2080
+static cocos2d::Size designResolutionSize = cocos2d::Size(1080, 2080);
+
+AppDelegate::AppDelegate()
+{
+}
+
+AppDelegate::~AppDelegate() 
+{
+#if USE_AUDIO_ENGINE
+    AudioEngine::end();
+#elif USE_SIMPLE_AUDIO_ENGINE
+    SimpleAudioEngine::end();
+#endif
+}
+
+// 如果想要不同的上下文，修改glContextAttrs的值
+// 这将影响所有平台
+void AppDelegate::initGLContextAttrs()
+{
+    // 设置OpenGL上下文属性：红、绿、蓝、alpha、深度、模板、多重采样计数
+    GLContextAttrs glContextAttrs = {8, 8, 8, 8, 24, 8, 0};
+
+    GLView::setGLContextAttrs(glContextAttrs);
+}
+
+// 如果想要使用包管理器安装更多包
+// 不要修改或删除此函数
+static int register_all_packages()
+{
+    return 0; // 包管理器的标志
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    // 步骤1：初始化Director
+    auto director = Director::getInstance();
+    auto glview = director->getOpenGLView();
+    if(!glview) {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+        // 窗口大小：1080 x 2080，缩放比例0.5
+        glview = GLViewImpl::createWithRect("A1", cocos2d::Rect(0, 0, 1080, 2080), 0.5);
+#else
+        glview = GLViewImpl::create("A1");
+#endif
+        director->setOpenGLView(glview);
+    }
+
+    // 步骤2：关闭FPS显示
+    director->setDisplayStats(false);
+
+    // 步骤3：设置FPS。如果不调用此函数，默认值为1.0/60
+    director->setAnimationInterval(1.0f / 60);
+
+    // 步骤4：使用FIXED_WIDTH策略设置设计分辨率为1080 x 2080
+    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::FIXED_WIDTH);
+
+    register_all_packages();
+
+    // 步骤5：创建场景。这是一个自动释放对象
+    auto scene = HelloWorld::createScene();
+
+    // 步骤6：运行场景
+    director->runWithScene(scene);
+
+    return true;
+}
+
+// 当应用程序处于非活动状态时调用此函数。注意，接收电话时会调用此函数
+void AppDelegate::applicationDidEnterBackground() {
+    Director::getInstance()->stopAnimation();
+
+#if USE_AUDIO_ENGINE
+    AudioEngine::pauseAll();
+#elif USE_SIMPLE_AUDIO_ENGINE
+    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    SimpleAudioEngine::getInstance()->pauseAllEffects();
+#endif
+}
+
+// 当应用程序再次激活时调用此函数
+void AppDelegate::applicationWillEnterForeground() {
+    Director::getInstance()->startAnimation();
+
+#if USE_AUDIO_ENGINE
+    AudioEngine::resumeAll();
+#elif USE_SIMPLE_AUDIO_ENGINE
+    SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    SimpleAudioEngine::getInstance()->resumeAllEffects();
+#endif
+}
